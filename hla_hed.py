@@ -45,7 +45,7 @@ def check_file(infile: str) -> None:
     if not infile.exists:
         raise Exception(f"{str(infile)} file is not exist")
 
-def read_fasta(infile: str):
+def read_fasta(infile: str) -> dict:
     infile = Path(infile)
     check_file(infile)
     record = SeqIO.parse(infile, "fasta")
@@ -55,14 +55,14 @@ def read_fasta(infile: str):
         raise Exception("Input sequences length is not equality")
     return(seq_array)
 
-def read_aa(infile: str):
+def read_aa(infile: str) -> dict:
     infile = Path(infile)
     check_file(infile)
     df = pd.read_csv(infile, header=0, sep="\t", index_col=0)
     aa_pairwise_dis = df.to_dict()
     return(aa_pairwise_dis)
 
-def calculate_distance(hla1, hla2, sequence, distance):
+def calculate_distance(hla1: str, hla2: str, sequence: dict, distance: dict) -> float:
     seq_hla1 = sequence.get(hla1, False)
     seq_hla2 = sequence.get(hla2, False)
     if not seq_hla1 or not seq_hla2:
