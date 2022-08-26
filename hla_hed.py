@@ -12,9 +12,9 @@ import pandas as pd
 from Bio import SeqIO
 from pathlib import Path
 from itertools import combinations
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, RawDescriptionHelpFormatter, Namespace
 
-def get_opt():
+def get_opt() -> Namespace:
     """
     Input HLA file format
     
@@ -27,7 +27,7 @@ def get_opt():
     Grantham R. Amino acid difference formula to help explain protein evolution. Science. 1974 Sep 6;185(4154):862-4. doi: 10.1126/science.185.4154.862. PMID: 4843792.
     Pierini F, Lenz TL. Divergent Allele Advantage at Human MHC Genes: Signatures of Past and Ongoing Selection. Mol Biol Evol. 2018 Sep 1;35(9):2145-2158. doi: 10.1093/molbev/msy116. PMID: 29893875; PMCID: PMC6106954.
     Chowell D, Krishna C, Pierini F, Makarov V, Rizvi NA, Kuo F, Morris LGT, Riaz N, Lenz TL, Chan TA. Evolutionary divergence of HLA class I genotype impacts efficacy of cancer immunotherapy. Nat Med. 2019 Nov;25(11):1715-1720. doi: 10.1038/s41591-019-0639-4. Epub 2019 Nov 7. PMID: 31700181; PMCID: PMC7938381.
-    
+
     """
     
     script = os.path.dirname(os.path.abspath(__file__))
@@ -41,11 +41,11 @@ def get_opt():
     parse = parser.parse_args()
     return(parse)
 
-def check_file(infile):
+def check_file(infile: str) -> None:
     if not infile.exists:
         raise Exception(f"{str(infile)} file is not exist")
 
-def read_fasta(infile):
+def read_fasta(infile: str):
     infile = Path(infile)
     check_file(infile)
     record = SeqIO.parse(infile, "fasta")
@@ -55,14 +55,14 @@ def read_fasta(infile):
         raise Exception("Input sequences length is not equality")
     return(seq_array)
 
-def read_aa(infile):
+def read_aa(infile: str):
     infile = Path(infile)
     check_file(infile)
     df = pd.read_csv(infile, header=0, sep="\t", index_col=0)
     aa_pairwise_dis = df.to_dict()
     return(aa_pairwise_dis)
 
-def calculate_distange(hla1, hla2, sequence, distance):
+def calculate_distance(hla1, hla2, sequence, distance):
     seq_hla1 = sequence.get(hla1, False)
     seq_hla2 = sequence.get(hla2, False)
     if not seq_hla1 or not seq_hla2:
@@ -99,7 +99,7 @@ def main():
         with open(outfile, "w") as fw:
             fw.write("\t".join(outheader) + "\n")
             for allele1, allele2 in alleles_pair:
-                dis_hla_pair = calculate_distange(allele1, allele2, seq_array, aa_pairwise_dis)
+                dis_hla_pair = calculate_distance(allele1, allele2, seq_array, aa_pairwise_dis)
                 outline = [allele1, allele2, dis_hla_pair]
                 outline = [str(x) for x in outline]
 
@@ -111,15 +111,15 @@ def main():
             for _, line in df.iterrows():
                 hla_a1 = line["A1"]
                 hla_a2 = line["A2"]
-                dis_hla_a = calculate_distange(hla_a1, hla_a2, seq_array, aa_pairwise_dis)
+                dis_hla_a = calculate_distance(hla_a1, hla_a2, seq_array, aa_pairwise_dis)
 
                 hla_b1 = line["B1"]
                 hla_b2 = line["B2"]
-                dis_hla_b = calculate_distange(hla_b1, hla_b2, seq_array, aa_pairwise_dis)
+                dis_hla_b = calculate_distance(hla_b1, hla_b2, seq_array, aa_pairwise_dis)
                 
                 hla_c1 = line["C1"]
                 hla_c2 = line["C2"]
-                dis_hla_c = calculate_distange(hla_c1, hla_c2, seq_array, aa_pairwise_dis)
+                dis_hla_c = calculate_distance(hla_c1, hla_c2, seq_array, aa_pairwise_dis)
 
                 if dis_hla_a == "NA" or dis_hla_b == "NA" or dis_hla_c == "NA":
                     dis_mean = "NA"
