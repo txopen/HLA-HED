@@ -22,7 +22,7 @@ def get_opt() -> Namespace:
     p1     A*01:01 A*01:03 B*07:01 B*07:02 C*01:01 C*01:02
     p2     A*01:01 A*01:03 B*07:01 B*07:02 C*01:01 C*01:02
     
-    If you use this tool, please cite the following three papers.
+    If you use this tool, please cite the three following papers.
     
     Grantham R. Amino acid difference formula to help explain protein evolution. Science. 1974 Sep 6;185(4154):862-4. doi: 10.1126/science.185.4154.862. PMID: 4843792.
     Pierini F, Lenz TL. Divergent Allele Advantage at Human MHC Genes: Signatures of Past and Ongoing Selection. Mol Biol Evol. 2018 Sep 1;35(9):2145-2158. doi: 10.1093/molbev/msy116. PMID: 29893875; PMCID: PMC6106954.
@@ -43,7 +43,7 @@ def get_opt() -> Namespace:
 
 def check_file(infile: str) -> None:
     if not infile.exists:
-        raise Exception(f"{str(infile)} file is not exist")
+        raise Exception(f"{str(infile)} does not exist.")
 
 def read_fasta(infile: str) -> dict:
     infile = Path(infile)
@@ -52,7 +52,7 @@ def read_fasta(infile: str) -> dict:
     seq_array = {seq.id: str(seq.seq) for seq in record}
     seq_len = [len(value) for value in seq_array.values()]
     if len(set(seq_len)) != 1:
-        raise Exception("Input sequences length is not equality")
+        raise Exception("The length of input sequences in the fasta file is different.") 
     return(seq_array)
 
 def read_aa(infile: str) -> dict:
